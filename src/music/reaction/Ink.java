@@ -5,9 +5,10 @@ import music.UC;
 import music.graphics.G;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Ink implements I.Show {
+public class Ink implements I.Show, Serializable {
     public static final Buffer BUFFER = new Buffer();
     public Norm norm;
     public G.VS vs;
@@ -60,7 +61,7 @@ public class Ink implements I.Show {
     }
 
     // ----------------------- norm ------------------------
-    public static class Norm extends G.PL {
+    public static class Norm extends G.PL implements Serializable {
         public static final int N = UC.normSampleSize, MAX = UC.normCordMax;
         public static final G.VS NCS = new G.VS(0, 0, MAX, MAX); // norm coordinate system
 

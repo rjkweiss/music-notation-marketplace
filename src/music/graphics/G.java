@@ -1,6 +1,7 @@
 package music.graphics;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.Random;
 
 public class G {
@@ -13,7 +14,7 @@ public class G {
     }
 
     // ----------------------------- V ----------------------------------------
-    public static class V {
+    public static class V implements Serializable {
         public static Transform T = new Transform();
         public int x, y;
 
@@ -32,7 +33,7 @@ public class G {
         public int ty() { return y * T.n/T.d + T.dy;}
 
         // ------------------------- Transform -----------------------------
-        public static class Transform {
+        public static class Transform implements Serializable {
             public int dx, dy, n, d; // isomorphic scale = n / d
             // (x', y') = (x * n/d + dx, y * n/d + dy)
             public void setScale(int oW, int oH, int nW, int nH) {
@@ -88,7 +89,7 @@ public class G {
     }
 
     // ----------------------------- PL ----------------------------------------
-    public static class PL {
+    public static class PL implements Serializable {
         public V[] points;
         public PL(int count) {
             points = new V[count];
