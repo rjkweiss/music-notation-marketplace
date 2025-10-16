@@ -51,7 +51,6 @@ public class Ink implements I.Show, Serializable {
             // you do not need to use "this" keyword when calling parent functions -- works just fine with
             // just calling function name itself
             this.drawN(g, n);
-            bbox.draw(g);
         }
         // required by I.Area
         public boolean hit(int x, int y) { return true; }

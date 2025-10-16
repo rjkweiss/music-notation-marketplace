@@ -13,4 +13,5 @@ public class UC {
     public static Color inkColor = Color.BLACK;
     public static int dotThreshold = 5;
     public static String shapeDatabaseFilename = "shapeDB.dat";
+    public static int noBid = 10_000;
 }
