@@ -1,11 +1,10 @@
-package music.reaction;
+package reaction;
 
-import music.I;
-import music.UC;
-import music.graphics.G;
+import music.*;
+import graphics.G;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
@@ -192,8 +191,8 @@ public class Shape implements Serializable {
             return false;
         }
 
-        public void keyTyped(KeyEvent e) {
-            char c = e.getKeyChar();
+        public void keyTyped(KeyEvent ke) {
+            char c = ke.getKeyChar();
             System.out.println("Typed: " + c); // debug
             if(c == 0x0D || c == 0x0A){Shape.DB.save();}
             curName = (c == ' ' || c == 0x0D || c == 0x0A)? "": curName + c; // x0D & x0A are ascii CR & LF

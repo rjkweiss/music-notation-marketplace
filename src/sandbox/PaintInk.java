@@ -1,10 +1,10 @@
-package music.sandbox;
+package sandbox;
 
 import music.UC;
-import music.graphics.G;
-import music.graphics.WinApp;
-import music.reaction.Ink;
-import music.reaction.Shape;
+import graphics.G;
+import graphics.WinApp;
+import reaction.Ink;
+import reaction.Shape;
 
 import java.awt.Graphics;
 import java.awt.Color;

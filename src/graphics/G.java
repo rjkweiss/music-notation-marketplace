@@ -1,4 +1,4 @@
-package music.graphics;
+package graphics;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -92,6 +92,20 @@ public class G {
         public void add(V v) {add(v.x, v.y);}
         public VS getNewVS(){return new VS(h.lo, v.lo, h.hi - h.lo, v.hi - v.lo);}
         public void draw(Graphics g) {g.drawRect(h.lo, v.lo, h.hi - h.lo, v.hi - v.lo);}
+    }
+
+    // ---------------------------- Hierarchical components ------------------- //
+    public static class HC {
+        public static HC ZERO = new HC(null, 0);
+        public HC dad;
+        public int dv;
+
+        public HC(HC dad, int dv) {
+            this.dad = dad;
+            this.dv = dv;
+        }
+
+        public int v() {return dv + (dad == ZERO ? 0 : dad.v());}
     }
 
     // ----------------------------- PL ----------------------------------------

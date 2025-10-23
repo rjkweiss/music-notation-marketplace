@@ -1,7 +1,7 @@
-package music.reaction;
+package reaction;
 
 import music.I;
-import music.graphics.G;
+import graphics.G;
 
 import java.util.ArrayList;
 

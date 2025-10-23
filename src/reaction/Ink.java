@@ -1,8 +1,8 @@
-package music.reaction;
+package reaction;
 
 import music.I;
 import music.UC;
-import music.graphics.G;
+import graphics.G;
 
 import java.awt.*;
 import java.io.Serializable;

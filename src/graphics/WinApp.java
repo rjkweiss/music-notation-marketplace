@@ -1,4 +1,4 @@
-package music.graphics;
+package graphics;
 
 
 /*

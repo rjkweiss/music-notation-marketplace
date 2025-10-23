@@ -1,7 +1,7 @@
-package music.sandbox;
+package sandbox;
 
-import music.graphics.G;
-import music.graphics.WinApp;
+import graphics.G;
+import graphics.WinApp;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

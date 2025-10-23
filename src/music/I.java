@@ -1,6 +1,6 @@
 package music;
 
-import music.reaction.Gesture;
+import reaction.Gesture;
 
 import java.awt.*;
 

@@ -1,8 +1,8 @@
-package music.sandbox;
+package sandbox;
 
 import music.UC;
-import music.graphics.*;
-import music.reaction.*;
+import graphics.*;
+import reaction.*;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

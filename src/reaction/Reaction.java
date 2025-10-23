@@ -1,4 +1,4 @@
-package music.reaction;
+package reaction;
 
 import music.I;
 import music.UC;

@@ -1,7 +1,7 @@
-package music.reaction;
+package reaction;
 
 import music.UC;
-import music.graphics.*;
+import graphics.*;
 
 import java.awt.*;
 import java.awt.event.*;

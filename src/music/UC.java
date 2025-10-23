@@ -14,4 +14,6 @@ public class UC {
     public static int dotThreshold = 5;
     public static String shapeDatabaseFilename = "shapeDB.dat";
     public static int noBid = 10_000;
+    public static int minStaffGap = 40;
+    public static int minSysGap = 40;
 }
