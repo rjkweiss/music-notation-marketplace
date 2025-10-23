@@ -5,6 +5,7 @@ import music.UC;
 import music.graphics.G;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.*;
 
@@ -12,8 +13,10 @@ public class Shape implements Serializable {
     public static Shape.Database DB = Shape.Database.load();
     public static Shape DOT = DB.get("DOT");
     public static Collection<Shape> LIST = DB.values();
+    public static Trainer TRAINER = new Trainer();
     public Prototype.List prototypes = new Prototype.List();
     public String name;
+
 
     public Shape(String name) {this.name = name;}
 
@@ -38,24 +41,34 @@ public class Shape implements Serializable {
     // kind of a BST that stores information alphabetical
     public static class Database extends TreeMap<String, Shape> {
         private static String filename = UC.shapeDatabaseFilename;
-        public static Database load() {
-            Database res  = new Database();
-            // initialize db with DOT character
-            res.put("DOT", new Shape("DOT"));
-            // good practice -- always open/write to files within try block
-            try {
-                System.out.println("Attempting to load database...");
+
+        private Database () {
+            super();
+            put("DOT", new Shape("DOT"));
+        }
+
+        private Shape forceGet(String name){ // always returns Shape..
+            if(!DB.containsKey(name)){DB.put(name, new Shape(name));} //..adds new if necessary
+            return DB.get(name);
+        }
+        public void train(String name, Ink.Norm norm){if(isLegal(name)){forceGet(name).prototypes.train(norm);}}
+
+        public static Database load(){
+            Database res;
+            try{
+                System.out.println("attempting DB load..");
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename));
-                res = (Database) ois.readObject();
-                // print the db shape's keys
-                System.out.println("Loaded database successfully - Found: " + res.keySet());
+                res = (Shape.Database) ois.readObject();
+                System.out.println("Successful load - found" + res.keySet());
                 ois.close();
-            } catch (Exception e) {
-                System.out.println("Failed to load database!");
+            } catch(Exception e) {
+                System.out.println("Load failed.");
                 System.out.println(e);
+                res = new Database();
             }
             return res;
         }
+
         // handles serialization
         public static void save() {
             try {
@@ -82,7 +95,7 @@ public class Shape implements Serializable {
         // ------------------ List --------------------
         public static class List extends ArrayList<Prototype> implements I.Show {
             public static Prototype bestMatch; // sets a side effect bestDist
-            private static int M = 10, W = 60;
+            private static int M = 10, W = 60, showBoxHeight = M + W;
             private static G.VS showBox = new G.VS(M, M, W, W);
 
             public int bestDist(Ink.Norm norm) {
@@ -105,6 +118,86 @@ public class Shape implements Serializable {
                     g.drawString("" + p.nBlend, x, 20);
                 }
             }
+
+            public void train(Ink.Norm norm){
+                if(bestDist(norm) < UC.noMatchDist){ // we found a match so blend
+                    bestMatch.blend(norm);
+                }else{
+                    add(new Shape.Prototype()); // didn't match so add a new one (from Ink.BUFFER)
+                }
+            }
+        }
+    }
+
+    // ---------------------- Trainer --------------- //
+    public static class Trainer implements I.Show, I.Area{
+
+        private Trainer(){}; // Singleton
+
+        public static String UNKNOWN = " <- this name is currently Unknown.";
+        public static String ILLEGAL = " <-this name is NOT a legal Shape name.";
+        public static String KNOWN   = " <-this is a known shape.";
+
+        public static String curName = "";
+        public static String curState = ILLEGAL;
+
+        public static Shape.Prototype.List pList = new Shape.Prototype.List();
+
+        public void setState(){
+            curState = !Shape.DB.isLegal(curName) ? ILLEGAL : UNKNOWN;
+            if(curState == UNKNOWN){
+                if(Shape.DB.isKnown(curName)){
+                    curState = KNOWN;
+                    pList = Shape.DB.get(curName).prototypes;
+                }else{ // it really is UNKNOWN
+                    pList = null;
+                }
+            }
+        }
+
+        // I.Show functions
+        public void show(Graphics g){
+            G.fillback(g);
+            g.setColor(Color.BLACK);
+            g.drawString(curName, 600,30);
+            g.drawString(curState, 700,30);
+            g.setColor(Color.RED);
+            Ink.BUFFER.show(g);
+            if(pList != null){pList.show(g);}
+        }
+
+        // I.Area functions
+        public boolean hit(int x, int y){return true;}
+        public void dn(int x, int y){Ink.BUFFER.dn(x,y);}
+        public void drag(int x, int y){Ink.BUFFER.drag(x,y);}
+        public void up(int x, int y){
+            if (removePrototype(x,y)) {return;}
+
+            Ink.BUFFER.up(x,y);
+            Ink ink = new Ink();
+            Shape.DB.train(curName, ink.norm); // safe because legal name test is done in Database
+            setState(); // possibly convert previously UNKNOWN to KNOWN
+        }
+        private boolean removePrototype(int x, int y) {
+            int H = Prototype.List.showBoxHeight;
+            if (y < H) { //if stroke ended in show box, don't train, just delete
+                int iBox = x / H; // compute box number
+                Prototype.List pList = Trainer.pList;
+                if (pList != null && iBox < pList.size()) {
+                    pList.remove(iBox);
+                }
+                Ink.BUFFER.clear();
+                return true; // tell up() we were in show box areas
+            }
+            return false;
+        }
+
+        public void keyTyped(KeyEvent e) {
+            char c = e.getKeyChar();
+            System.out.println("Typed: " + c); // debug
+            if(c == 0x0D || c == 0x0A){Shape.DB.save();}
+            curName = (c == ' ' || c == 0x0D || c == 0x0A)? "": curName + c; // x0D & x0A are ascii CR & LF
+            setState();
         }
     }
 }

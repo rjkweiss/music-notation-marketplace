@@ -15,6 +15,12 @@ public abstract class Reaction implements I.React{
         shape = Shape.DB.get(shapeName);
         if(shape == null){System.out.println("WTF? - Shape.DB don't know about: "+shapeName);}
     }
+
+    public static void nuke() { // used to reset for undo
+        byShape = new Map(); // throw away all reactions
+        initialReactions.enable(); // re-enable all initial reactions
+    }
+
     public void enable(){List list = byShape.getList(shape); if(!list.contains(this)){list.add(this);}}
     public void disable(){List list = byShape.getList(shape); list.remove(this);}
     public static Reaction best(Gesture g){return byShape.getList(g.shape).loBid(g);}
@@ -33,6 +39,7 @@ public abstract class Reaction implements I.React{
             }
             return res;
         }
+        public void enable() {for (Reaction r : this) r.enable();} // enable entire list
     }
     //---------------------MAP-----------------------
     public static class Map extends HashMap<Shape, List> {
