@@ -33,6 +33,7 @@ public class Sys extends Mass {
         int off = y - staffs.sysTop();
         G.HC staffTop = new G.HC(staffs.sysTop, off);
         staffs.add(new Staff(this, staffs.size(), staffTop));
+        page.updateMaxH();
     }
 
     public void show(Graphics g) {

@@ -8,6 +8,7 @@ import java.awt.*;
 public class Page extends Mass {
     public Margins margins = new Margins();
     public int sysGap; // size of space between sys on page. Set by adding 2nd sys
+    public int maxH = 0;
     public G.HC pageTop;
     public Sys.List sysList = new Sys.List();
 
@@ -17,6 +18,7 @@ public class Page extends Mass {
         pageTop = new G.HC(G.HC.ZERO, y);
         G.HC sysTop = new G.HC(pageTop, 0);
         sysList.add(new Sys(this, sysTop));
+        updateMaxH();
 
         // reactions go here
         addReaction(new Reaction("W-W") {
@@ -60,6 +62,11 @@ public class Page extends Mass {
         }
         G.HC sysTop = new G.HC(pageTop, nSys * (sysHeight + sysGap));
         sysList.add(new Sys(this, sysTop));
+    }
+    public void updateMaxH() {
+        Sys sys = sysList.get(0);
+        int newH = sys.staffs.get(sys.staffs.size() - 1).fmt.H;
+        if (maxH < newH) {maxH = newH;}
     }
 
     public void show(Graphics g) {
