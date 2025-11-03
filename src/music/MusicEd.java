@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class MusicEd extends WinApp {
-    public Layer BACK = new Layer("BACK"), FORE = new Layer("FORE");
+    static {new Layer("BACK"); new Layer("NOTE"); new Layer("FORE");}
     public static boolean training = false;
     public static I.Area currArea = Gesture.AREA;
     public static Page PAGE;
@@ -37,6 +37,10 @@ public class MusicEd extends WinApp {
         g.setColor(Color.BLUE);
         Ink.BUFFER.show(g);
         g.drawString(Gesture.recognized, 900, 30);
+        if (PAGE != null) {
+            Glyph.CLEF_G.showAt(g, 8, 100, PAGE.margins.top + 4 * 8);
+            Glyph.HEAD_Q.showAt(g, 8, 200, PAGE.margins.top + 4 * 8);
+        }
     }
 
     public void mousePressed(MouseEvent me) {

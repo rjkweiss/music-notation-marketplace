@@ -34,6 +34,7 @@ public class Staff extends Mass {
                 new Bar(Staff.this.sys, g.vs.xM());
             }
         });
+
         addReaction(new Reaction("S-S") { // toggle barContinues
             public int bid(Gesture g) {
                 if (Staff.this.sys.iSys != 0) {return UC.noBid;} // only change bar continues for system
@@ -47,6 +48,52 @@ public class Staff extends Mass {
             public void act(Gesture g) {fmt.toggleBarContinues();}
         });
 
+        addReaction(new Reaction("SW-SW") { // add note to staff
+            public int bid(Gesture g) {
+                Page.Margins pageMargins = sys.page.margins;
+                int x = g.vs.xM(), y = g.vs.yM();
+                if (x < pageMargins.left || x > pageMargins.right) {return UC.noBid;}
+                int H = Staff.this.fmt.H, top = Staff.this.yTop() - H, bot = Staff.this.yBot() + H;
+                if (y < top || y > bot) {return UC.noBid;}
+                return 10;
+            }
+
+            public void act(Gesture g) {new Head(Staff.this,  g.vs.xM(), g.vs.yM());}
+        });
+
+        addReaction(new Reaction("W-S") { // adds Q REST
+            public int bid(Gesture g) {
+                int x = g.vs.xL(), y = g.vs.yM();
+                Page.Margins pageMargins = sys.page.margins;
+                if(x < pageMargins.left || x > pageMargins.right) {return UC.noBid;}
+                int H = fmt.H, top = yTop() - H, bot = yBot() + H;
+
+                if (y < top || y > bot) {return UC.noBid;}
+                return 10;
+            }
+
+            public void act(Gesture g) {
+                Time t = Staff.this.sys.getTime(g.vs.xL());
+                new Rest(Staff.this, t);
+            }
+        });
+
+        addReaction(new Reaction("E-S") { // adds 8th REST
+            public int bid(Gesture g) {
+                int x = g.vs.xL(), y = g.vs.yM();
+                Page.Margins pageMargins = sys.page.margins;
+                if(x < pageMargins.left || x > pageMargins.right) {return UC.noBid;}
+                int H = fmt.H, top = yTop() - H, bot = yBot() + H;
+
+                if (y < top || y > bot) {return UC.noBid;}
+                return 10;
+            }
+
+            public void act(Gesture g) {
+                Time t = Staff.this.sys.getTime(g.vs.xL());
+                new Rest(Staff.this, t).nFlags = 1;
+            }
+        });
     }
 
     public int yTop() {return staffTop.v();}
@@ -63,6 +110,14 @@ public class Staff extends Mass {
         for (int i = 0; i < fmt.nLines; i++) {
             g.drawLine(x1, y + (i * h), x2, y + (i * h));
         }
+    }
+
+    public int yLine(int n) {return yTop() + (n * fmt.H);}
+    public int lineOfY(int y) {
+        int H = fmt.H;
+        int bias = 100; // because integer truncation rounds towards 0
+        int top = yTop() - H * bias;
+        return (y - top + H/2) / H - bias;
     }
 
     // ----------------------------- FMT --------------------- //
