@@ -43,6 +43,19 @@ public class Bar extends Mass {
                 }
             }
         });
+
+        addReaction(new Reaction("S-N") {
+            public int bid(Gesture g) {
+                int dx = Math.abs(g.vs.xL() - x) ;
+                if (dx > 30) {return UC.noBid;}
+                int y = g.vs.yL();
+                if (y < sys.yTop() || y > sys.yBot()) {return UC.noBid;}
+
+                return dx;
+            }
+
+            public void act(Gesture g) {deleteBar();}
+        });
     }
     // helpers to change style
     public void cycleType() {barType++;if(barType > 2) {barType = 0;}}
@@ -95,5 +108,9 @@ public class Bar extends Mass {
             if ((barType & LEFT) != 0) {thinBar(g, x - 2 * H, y1, y2); wings(g, x - 2 * H, y1, y2, -H, H);}
             if ((barType & RIGHT) != 0) {thinBar(g, x + H, y1, y2); wings(g, x + H, y1, y2, H, H);}
         }
+    }
+
+    public void deleteBar() {
+        deleteMass();
     }
 }

@@ -31,21 +31,23 @@ public class MusicEd extends WinApp {
         });
     }
 
+    static int [] xPoly = {100, 200, 200, 100};
+    static int [] yPoly = {50, 70, 80, 60};
+    static Polygon poly = new Polygon(xPoly, yPoly, 4);
+
     public void paintComponent(Graphics g) {
         G.fillback(g);
         Layer.ALL.show(g);
         g.setColor(Color.BLUE);
         Ink.BUFFER.show(g);
         g.drawString(Gesture.recognized, 900, 30);
-        if (PAGE != null) {
-//            Glyph.CLEF_G.showAt(g, 8, 100, PAGE.margins.top + 4 * 8);
-//            Glyph.HEAD_Q.showAt(g, 8, 200, PAGE.margins.top + 4 * 8);
-//            int H = 32;
-//            Glyph.HEAD_Q.showAt(g, H, 200, PAGE.margins.top + 4 * H);
-//            g.setColor(Color.RED);
-//            g.drawRect(200, PAGE.margins.top + 3 * H, 24 * H / 10, 2 * H);
 
-        }
+//        g.setColor(Color.BLACK);
+//        int h = -8, x1 = 100, x2 = 200;
+//        Beam.setMasterBeam(x1, 100 + G.rnd(100), x2, 100 + G.rnd(100));
+//        Beam.drawBeamStack(g, 0, 1,x1, x2, h);
+//        g.setColor(Color.ORANGE);
+//        Beam.drawBeamStack(g, 1, 3,x1 + 10, x2 - 10, h);
     }
 
     public void mousePressed(MouseEvent me) {

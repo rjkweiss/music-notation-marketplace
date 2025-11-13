@@ -11,6 +11,7 @@ public class Sys extends Mass {
     public int iSys;
     public Staff.List staffs;
     public Time.List times;
+    public Stem.List stems = new Stem.List();
 
     public Sys(Page page, G.HC sysTop) {
         super("BACK");
@@ -29,6 +30,38 @@ public class Sys extends Mass {
                 this.staffs.add(ns);
             }
         }
+
+        // reactions
+        addReaction(new Reaction("E-E") { // beam stems
+            @Override
+            public int bid(Gesture g) {
+                int x1 = g.vs.xL(),  y1 = g.vs.yL(), x2 = g.vs.xH(), y2 = g.vs.yH();
+                if (stems.fastReject((y1 + y2) / 2)) {return UC.noBid;}
+                ArrayList<Stem> temp = stems.allIntersectors(x1, y1, x2, y2);
+                if (temp.size() < 2) {return UC.noBid;}
+                Beam beam = temp.get(0).beam; // check if all crossed stems are owned by same beam (including null)
+
+                for (Stem s: temp) {
+                    if (s.beam != beam) {return UC.noBid;}
+                }
+
+                if (beam == null && temp.size() != 2) {return UC.noBid;}
+                if (beam == null && (temp.get(0).nFlags != 0 || temp.get(1).nFlags != 0)) {return UC.noBid;}
+                return 50; // either create new beam or flag a set of beams
+            }
+
+            @Override
+            public void act(Gesture g) {
+                int x1 = g.vs.xL(),  y1 = g.vs.yL(), x2 = g.vs.xH(), y2 = g.vs.yH();
+                ArrayList<Stem> temp = stems.allIntersectors(x1, y1, x2, y2);
+                Beam beam = temp.get(0).beam;
+                if (beam == null) {
+                    new Beam(temp.get(0), temp.get(1));
+                } else {
+                    for (Stem s: temp) {s.incFlags();}
+                }
+            }
+        });
     }
 
     // accessor function that allows us to get sys times

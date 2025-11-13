@@ -43,10 +43,24 @@ public class Head extends Mass implements Comparable<Head> {
                 boolean up = x > (t.x + w/2);
 
                 if (Head.this.stem == null) {
-                    t.stemHeads(staff, up, y1, y2);
+                    Stem.getStems(staff, t, y1, y2, up);
                 } else {
                     t.unStemHeads(y1, y2);
                 }
+            }
+        });
+
+        addReaction(new Reaction("DOT") { // cycle aug dots
+            public int bid(Gesture g) {
+                int xH = x(), yH = y(), h = staff.fmt.H, w = w();
+                int x = g.vs.xM(), y = g.vs.yM();
+
+                if (x < xH || x > xH + 2 * w || y < yH - h || y > yH + h) {return UC.noBid;}
+                return Math.abs(xH + w - x) + Math.abs(yH - y);
+            }
+
+            public void act(Gesture g) {
+                if (Head.this.stem != null) {Head.this.stem.cycleDot();}
             }
         });
     }
@@ -82,10 +96,15 @@ public class Head extends Mass implements Comparable<Head> {
     }
 
     public void show(Graphics g) {
-        g.setColor(wrongSide ? Color.GREEN : Color.BLUE);
-        if (stem != null && stem.heads.size() != 0 && this == stem.firstHead()) {g.setColor(Color.RED);}
+        g.setColor( stem == null ? Color.RED : Color.BLACK);
         int H = staff.fmt.H;
         (forcedGlyph != null ? forcedGlyph : normalGlyph()).showAt(g, H, x(), y());
+        if (stem != null) {
+            int off = UC.augDotOffset, sp = UC.augDotSpacing;
+            for (int i = 0; i < stem.nDots; i++) {
+                g.fillOval(time.x + off + i * sp, y() - 3 * H/2, H * 2/3, H * 2/3);
+            }
+        }
     }
 
     @Override
