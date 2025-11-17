@@ -8,6 +8,7 @@ public class Bar extends Mass {
     private static final int FAT = 0x2, RIGHT = 0x4, LEFT= 0x8; // bits in bar type, 0 - single, 1 - double, 2 - fine
     public Sys sys;
     public int x, barType = 0;
+    public Key key = null;  // null because most bars do not define key
 
     public Bar(Sys sys, int x) {
         super("BACK");
@@ -56,11 +57,49 @@ public class Bar extends Mass {
 
             public void act(Gesture g) {deleteBar();}
         });
+
+        addReaction(new Reaction("E-E") {
+            public int bid(Gesture g) {
+                if (barType != 1) {return UC.noBid;}
+                int x1 = g.vs.xL(), x2 = g.vs.xH();
+                if (x1 > x || x2 < x) {return UC.noBid;}
+                int y = g.vs.yM();
+                if (y < sys.yTop() || y > sys.yBot()) {return UC.noBid;}
+                return Math.abs(x - (x1 + x2) / 2);
+            }
+
+            public void act(Gesture g) {Bar.this.incKey();}
+        });
+
+        addReaction(new Reaction("W-W") {
+            public int bid(Gesture g) {
+                if (barType != 1) {return UC.noBid;}
+                int x1 = g.vs.xL(), x2 = g.vs.xH();
+                if (x1 > x || x2 < x) {return UC.noBid;}
+                int y = g.vs.yM();
+                if (y < sys.yTop() || y > sys.yBot()) {return UC.noBid;}
+                return Math.abs(x - (x1 + x2) / 2);
+            }
+
+            public void act(Gesture g) {Bar.this.decKey();}
+        });
     }
     // helpers to change style
     public void cycleType() {barType++;if(barType > 2) {barType = 0;}}
     public void toggleLeft() {barType = barType^LEFT;}
     public void toggleRight() {barType = barType^RIGHT;}
+    public void incKey() {
+        if (key == null) {key = new Key();}
+        if (key.glyph == Glyph.NATURAL) {key.glyph = Glyph.SHARP; key.n = 1; return;}
+        if (key.glyph == Glyph.FLAT) {key.glyph = Glyph.NATURAL; return;}
+        if (key.n < 7) {key.n++;}
+    }
+    public void decKey() {
+        if (key == null) {key = new Key();}
+        if (key.glyph == Glyph.NATURAL) {key.glyph = Glyph.FLAT; key.n = -1; return;}
+        if (key.glyph == Glyph.SHARP) {key.glyph = Glyph.NATURAL; return;}
+        if (key.n > -7) {key.n--;}
+    }
 
     public void show(Graphics g) {
         int sysTop = sys.yTop(), y1 = 0, y2 = 0; // y1, y2 are top and bottom of connected components
@@ -79,6 +118,7 @@ public class Bar extends Mass {
                 drawDots(g, x, staffTop);
             }
         }
+        if (barType == 1 && key != null) {key.drawOnSys(g, sys, x + UC.barKeyOffset);}
     }
     // helpers for show routine
     public static void wings(Graphics g, int x, int y1, int y2, int dx, int dy) {

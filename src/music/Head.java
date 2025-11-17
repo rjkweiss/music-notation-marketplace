@@ -12,6 +12,7 @@ public class Head extends Mass implements Comparable<Head> {
     public int line;
     public Time time;
     public boolean wrongSide = false;
+    public Accid accid = null;
 
     public Head(Staff staff, int x, int y) {
         super("NOTE");
@@ -63,6 +64,38 @@ public class Head extends Mass implements Comparable<Head> {
                 if (Head.this.stem != null) {Head.this.stem.cycleDot();}
             }
         });
+
+        addReaction(new Reaction("NE-SE") { // up arrow create sharp / raise
+            public int bid(Gesture g) {
+                int x = g.vs.xM(), y = g.vs.yL(); // center top is hotspot
+                int hX = Head.this.x() + Head.this.w() / 2, hY = Head.this.y();
+                int dx = Math.abs(x - hX), dy = Math.abs(y - hY), diff = dx + dy;
+                return diff < 50 ? diff : UC.noBid;
+            }
+
+            public void act(Gesture g) {Head.this.accidUp();}
+        });
+
+        addReaction(new Reaction("SE-NE") { // down arrow create flat / lower
+            public int bid(Gesture g) {
+                int x = g.vs.xM(), y = g.vs.yH(); // center bot is hotspot
+                int hX = Head.this.x() + Head.this.w() / 2, hY = Head.this.y();
+                int dx = Math.abs(x - hX), dy = Math.abs(y - hY), diff = dx + dy;
+                return diff < 50 ? diff : UC.noBid;
+            }
+
+            public void act(Gesture g) {Head.this.accidDn();}
+        });
+
+        addReaction(new Reaction("S-N") { // delete head
+            public int bid(Gesture g) {
+                int x = g.vs.xM(), y = g.vs.yL();
+                int hX = Head.this.x() + Head.this.w() / 2, hY = Head.this.y();
+                int dx = Math.abs(x - hX), dy = Math.abs(y - hY), diff = dx + dy;
+                return diff < 50 ? diff : UC.noBid;
+            }
+            public void act(Gesture g) {Head.this.deleteHead();}
+        });
     }
 
     public int w() {return 24 * staff.fmt.H / 10;}
@@ -72,19 +105,30 @@ public class Head extends Mass implements Comparable<Head> {
         if (wrongSide) {res += (stem != null && stem.isUp) ? w() : -w();}
         return res;
     }
+    public void accidUp(){
+        if (accid == null) {accid = new Accid(this, Accid.SHARP); return;}
+        if (accid.iGlyph < 4) {accid.iGlyph++;}
+    }
+    public void accidDn(){
+        if (accid == null) {accid = new Accid(this, Accid.FLAT); return;}
+        if (accid.iGlyph > 0) {accid.iGlyph--;}
+    }
     public Glyph normalGlyph() {
         if (stem == null) {return Glyph.HEAD_Q;}
         if (stem.nFlags == -1) {return Glyph.HEAD_HALF;}
         if (stem.nFlags == -2) {return Glyph.HEAD_W;}
         return Glyph.HEAD_Q;
     }
-    public void delete() {time.heads.remove(this);} // stub
-
-
+    public void deleteHead() {
+        if (accid != null) {accid.deleteAccid();}
+        time.heads.remove(this);
+        unStem();
+        deleteMass();
+    }
     public void unStem() {
         if (stem != null) {
             stem.heads.remove(this);
-            if (stem.heads.size() == 0) {stem.deleteStem();}
+            if (stem.heads.isEmpty()) {stem.deleteStem();}
             stem = null;
             wrongSide = false;
         }
@@ -94,7 +138,6 @@ public class Head extends Mass implements Comparable<Head> {
         s.heads.add(this);
         stem = s;
     }
-
     public void show(Graphics g) {
         g.setColor( stem == null ? Color.RED : Color.BLACK);
         int H = staff.fmt.H;
@@ -106,7 +149,6 @@ public class Head extends Mass implements Comparable<Head> {
             }
         }
     }
-
     @Override
     public int compareTo(Head h) {
         return (staff.iStaff != h.staff.iStaff) ? staff.iStaff - h.staff.iStaff : line - h.line;

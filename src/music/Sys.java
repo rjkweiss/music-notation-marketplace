@@ -12,6 +12,7 @@ public class Sys extends Mass {
     public Staff.List staffs;
     public Time.List times;
     public Stem.List stems = new Stem.List();
+    public Key initialKey = new Key();
 
     public Sys(Page page, G.HC sysTop) {
         super("BACK");
@@ -62,6 +63,36 @@ public class Sys extends Mass {
                 }
             }
         });
+
+        addReaction(new Reaction("E-E") { // increments initial key
+            @Override
+            public int bid(Gesture g) {
+                int x = page.margins.left;
+                int x1 = g.vs.xL(), x2 = g.vs.xH();
+                if (x1 > x || x2 < x) {return UC.noBid;}
+                int y = g.vs.yM();
+                if (y < yTop() || y > yBot()) {return UC.noBid;}
+                return Math.abs(x - (x1 + x2) / 2);
+            }
+
+            @Override
+            public void act(Gesture g) {Sys.this.incKey();}
+        });
+
+        addReaction(new Reaction("W-W") { // decrements initial key
+            @Override
+            public int bid(Gesture g) {
+                int x = page.margins.left;
+                int x1 = g.vs.xL(), x2 = g.vs.xH();
+                if (x1 > x || x2 < x) {return UC.noBid;}
+                int y = g.vs.yM();
+                if (y < yTop() || y > yBot()) {return UC.noBid;}
+                return Math.abs(x - (x1 + x2) / 2);
+            }
+
+            @Override
+            public void act(Gesture g) {Sys.this.decKey();}
+        });
     }
 
     // accessor function that allows us to get sys times
@@ -74,9 +105,20 @@ public class Sys extends Mass {
         page.updateMaxH();
     }
 
+    public void incKey() {
+        if (initialKey.n < 7) {initialKey.n++;}
+        initialKey.glyph = initialKey.n >= 0 ? Glyph.SHARP : Glyph.FLAT;
+    }
+    public void decKey() {
+        if (initialKey.n > -7) {initialKey.n--;}
+        initialKey.glyph = initialKey.n >= 0 ? Glyph.SHARP : Glyph.FLAT;
+    }
+
     public void show(Graphics g) {
         int x = page.margins.left;
         g.drawLine(x, yTop(), x, yBot());
+        int xKey = x + UC.marginKeyOffset;
+        initialKey.drawOnSys(g, this, xKey);
     }
 
     public int yTop() {return staffs.sysTop();}

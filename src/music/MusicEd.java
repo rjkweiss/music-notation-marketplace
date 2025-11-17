@@ -42,12 +42,10 @@ public class MusicEd extends WinApp {
         Ink.BUFFER.show(g);
         g.drawString(Gesture.recognized, 900, 30);
 
-//        g.setColor(Color.BLACK);
-//        int h = -8, x1 = 100, x2 = 200;
-//        Beam.setMasterBeam(x1, 100 + G.rnd(100), x2, 100 + G.rnd(100));
-//        Beam.drawBeamStack(g, 0, 1,x1, x2, h);
-//        g.setColor(Color.ORANGE);
-//        Beam.drawBeamStack(g, 1, 3,x1 + 10, x2 - 10, h);
+//        if (PAGE != null) {
+//            Staff staff = PAGE.sysList.getFirst().staffs.getFirst();
+//            Key.drawOnStaff(g, 7, Key.fF, 110, Glyph.FLAT, staff);
+//        }
     }
 
     public void mousePressed(MouseEvent me) {

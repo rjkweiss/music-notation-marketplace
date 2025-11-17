@@ -35,6 +35,12 @@ public class Glyph{
     public static Glyph REST_3F = new Glyph((char)61504, 16, 0, 4);
     public static Glyph REST_4F = new Glyph((char)61505, 16, 0, 4);
 
+    public static Glyph NATURAL = new Glyph((char)61511, 16, 0, 5);
+    public static Glyph FLAT = new Glyph((char)61512, 16, 0, 4);
+    public static Glyph SHARP = new Glyph((char)61513, 16, 0, 5);
+    public static Glyph D_FLAT = new Glyph((char)61514, 16, 0, 4);
+    public static Glyph D_SHARP = new Glyph((char)61515, 16, 0, 7);
+
     public static int theSize = -1;
     public static Font theFont;
 

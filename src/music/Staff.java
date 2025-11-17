@@ -182,6 +182,18 @@ public class Staff extends Mass {
         Collections.sort(clefs);
     }
 
+    public Glyph clefAtX(int x) {
+        Clef iClef = initialClef();
+        if (iClef == null) {return null;}
+        Glyph ret = iClef.glyph;
+        if (clefs != null) {
+            for (Clef c : clefs) {
+                if (c.x <= x) {ret = c.glyph;}
+            }
+        }
+        return ret;
+    }
+
     // ----------------------------- FMT --------------------- //
     public static class Fmt {
         public int nLines, H;
